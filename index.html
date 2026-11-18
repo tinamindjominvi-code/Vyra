@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Liquid Lock Screen</title>
+<style>
+:root{--date-size:clamp(4.5rem,15vw,9.5rem);--time-size:clamp(5rem,23vw,13rem);--glass:rgba(255,255,255,.17);--line:rgba(255,255,255,.58);--ink:#fff;}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b0b0d;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}
+body{display:grid;place-items:center}
+.lock{position:relative;width:100vw;height:100vh;min-height:560px;overflow:hidden;isolation:isolate;background:#141416}
+.wallpaper,.wallpaper::after{position:absolute;inset:-5%;content:"";background:center/cover no-repeat;will-change:transform;transition:transform .18s ease-out}.wallpaper{background-image:url('https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?auto=format&fit=crop&w=2400&q=90');transform:scale(1.08)}
+.wallpaper::after{inset:0;background:linear-gradient(180deg,rgba(0,0,0,.58) 0%,rgba(0,0,0,.16) 25%,transparent 48%,rgba(0,0,0,.16) 78%,rgba(0,0,0,.5) 100%);filter:blur(18px);transform:scale(1.08);opacity:.86}
+.top-blur{position:absolute;z-index:1;left:-8%;right:-8%;top:-15%;height:47%;background:linear-gradient(180deg,rgba(0,0,0,.78),rgba(0,0,0,.42) 45%,transparent);filter:blur(24px);opacity:.72;pointer-events:none}
+.content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top,22px) 22px env(safe-area-inset-bottom,24px);text-align:center}
+.status{width:min(100%,760px);display:flex;justify-content:space-between;align-items:center;padding:4px 8px;font-size:15px;font-weight:650;text-shadow:0 2px 8px #0008}.status-right{display:flex;gap:8px;align-items:center}.signal{letter-spacing:-3px}.battery{width:24px;height:12px;border:1.5px solid #fff;border-radius:4px;padding:1px}.battery i{display:block;height:100%;width:82%;background:#fff;border-radius:2px}.battery:after{content:"";display:block;position:absolute;margin:-8px 0 0 24px;width:2px;height:4px;background:#fff;border-radius:0 2px 2px 0}
+.date-wrap{margin-top:clamp(38px,9vh,92px);display:flex;flex-direction:column;align-items:center;cursor:pointer;user-select:none;text-shadow:0 4px 20px #0008}.date{font-size:var(--date-size);line-height:.92;font-weight:760;letter-spacing:-.075em;background:linear-gradient(180deg,#fff 0%,#ffffffc4 42%,#ffffff70 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 4px #0005);}.weekday{font-size:clamp(1rem,3vw,1.45rem);font-weight:600;letter-spacing:.01em;opacity:.9;margin-top:14px}.time{margin-top:clamp(12px,2vh,28px);font-size:var(--time-size);line-height:.8;font-weight:220;letter-spacing:-.105em;background:linear-gradient(180deg,#fff 0%,#ffffffb8 48%,#ffffff57 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 5px 16px #0007)}
+.bottom{margin-top:auto;width:min(100%,760px);display:flex;flex-direction:column;gap:20px;align-items:center}.quick{display:flex;justify-content:space-between;width:100%;padding:0 13px}.quick button{width:52px;height:52px;border:0;border-radius:50%;background:rgba(0,0,0,.35);backdrop-filter:blur(18px) saturate(150%);color:#fff;font-size:23px;box-shadow:inset 1px 1px 0 #fff7,0 5px 18px #0005;cursor:pointer;transition:.2s}.quick button:hover{transform:scale(1.08)}.quick button:active{transform:scale(.95)}.hint{font-size:14px;font-weight:550;text-shadow:0 2px 6px #0008;opacity:.85}.homebar{width:135px;height:5px;border-radius:4px;background:#fff;box-shadow:0 1px 6px #0008;margin-top:2px}
+.panel{position:absolute;z-index:4;right:18px;top:64px;width:min(310px,calc(100vw - 36px));padding:18px;border-radius:24px;background:rgba(30,30,34,.62);backdrop-filter:blur(28px) saturate(150%);box-shadow:inset 1px 1px 0 #fff7,0 14px 40px #0008;transform:translateY(-12px) scale(.96);opacity:0;pointer-events:none;transition:.25s}.panel.open{transform:none;opacity:1;pointer-events:auto}.panel h2{font-size:17px;margin:0 0 15px}.panel label{display:block;font-size:13px;margin:13px 0 6px;color:#fffc}.panel input[type=range]{width:100%;accent-color:#fff}.panel input[type=file]{width:100%;font-size:12px}.panel button{border:0;color:#111;background:#fff;border-radius:14px;padding:10px 13px;font-weight:650;cursor:pointer;margin-top:12px}.panel .close{float:right;background:transparent;color:#fff;font-size:20px;padding:0;margin:0}
+@media(max-width:500px){.status{font-size:13px}.quick button{width:48px;height:48px}.panel{top:52px}.date-wrap{margin-top:58px}}
+</style>
+</head>
+<body>
+<main class="lock" id="lock">
+  <div class="wallpaper" id="wallpaper"></div><div class="top-blur"></div>
+  <section class="content">
+    <div class="status"><span id="statusDate">mar. 12 juin</span><span class="status-right"><span>◉</span><span class="signal">▮▮▮</span><span>⌁</span><span class="battery"><i></i></span></span></div>
+    <div class="date-wrap" id="dateWrap" title="Double-cliquez pour ouvrir les réglages"><div class="date" id="date">12</div><div class="weekday" id="weekday">mardi 12 juin</div><div class="time" id="time">09:41</div></div>
+    <div class="bottom"><div class="quick"><button aria-label="Lampe">⌕</button><button aria-label="Appareil photo">◉</button></div><div class="hint">Balayer vers le haut pour ouvrir</div><div class="homebar"></div></div>
+  </section>
+  <aside class="panel" id="panel"><button class="close" id="close" aria-label="Fermer">×</button><h2>Personnaliser l’écran</h2><label for="photo">Votre fond d’écran</label><input id="photo" type="file" accept="image/*" /><label for="dateSize">Taille de la date</label><input id="dateSize" type="range" min="60" max="180" value="100" /><label for="timeSize">Taille de l’heure</label><input id="timeSize" type="range" min="60" max="170" value="100" /><button id="motion">Activer l’effet profondeur</button></aside>
+</main>
+<script>
+const $=s=>document.querySelector(s), lock=$('#lock'), wallpaper=$('#wallpaper'), panel=$('#panel');
+const months=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const days=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+function tick(){const d=new Date(), time=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});$('#time').textContent=time;$('#date').textContent=d.getDate();$('#weekday').textContent=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;$('#statusDate').textContent=`${days[d.getDay()].slice(0,3)}. ${d.getDate()} ${months[d.getMonth()]}`}
+tick();setInterval(tick,1000);
+$('#dateWrap').addEventListener('dblclick',()=>panel.classList.toggle('open'));$('#close').onclick=()=>panel.classList.remove('open');
+$('#photo').onchange=e=>{const f=e.target.files[0];if(f){const url=URL.createObjectURL(f);wallpaper.style.backgroundImage=`url("${url}")`;localStorage.setItem('lockPhoto',url)}};
+const saved=localStorage.getItem('lockPhoto');if(saved)wallpaper.style.backgroundImage=`url("${saved}")`;
+$('#dateSize').oninput=e=>document.documentElement.style.setProperty('--date-size',`calc(clamp(4.5rem,15vw,9.5rem) * ${e.target.value/100})`);$('#timeSize').oninput=e=>document.documentElement.style.setProperty('--time-size',`calc(clamp(5rem,23vw,13rem) * ${e.target.value/100})`);
+let motionOn=false;function move(x,y){wallpaper.style.transform=`scale(1.08) translate(${x*-.018}px,${y*-.018}px)`}
+lock.addEventListener('pointermove',e=>{if(motionOn)move(e.clientX-innerWidth/2,e.clientY-innerHeight/2)});
+$('#motion').onclick=async()=>{motionOn=!motionOn;$('#motion').textContent=motionOn?'Désactiver l’effet profondeur':'Activer l’effet profondeur';if(motionOn&&typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission){try{await DeviceOrientationEvent.requestPermission()}catch(e){}}};
+window.addEventListener('deviceorientation',e=>{if(motionOn)move(e.gamma||0,e.beta||0)});
+</script>
+</body>
+</html>
